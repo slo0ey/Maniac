@@ -1,0 +1,19 @@
+{
+  "name": "@maniac/maniac",
+  "version": "1.0.0",
+  "repository": "https://github.com/slo0ey/Maniac.git",
+  "author": "slo0ey",
+  "license": "AGPL-3.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "start:bot": "yarn workspace @maniac/bot yarn run start"
+  },
+  "workspaces": [
+    "packages/bot",
+    "packages/website"
+  ],
+  "devDependencies": {
+    "typescript": "^4.8.3"
+  }
+}
