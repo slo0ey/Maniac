@@ -10,7 +10,6 @@ import Event from './event.js';
 import registerCommands from './rest.js';
 import { createDiscordClient } from './utils/client.js';
 import { createCommandMap } from './utils/command.js';
-import keepAlive from './utils/keepAlive.js';
 import { createLogger, logWithStack } from './utils/logger.js';
 
 if (process.env.NODE_ENV !== 'production') {
@@ -52,7 +51,6 @@ try {
     logger.debug(`Listening an event '${event.name}'.`);
   }
 
-  keepAlive(10); // 앱 안뒤지기 위함
   await registerCommands();
   await client.login(process.env.TOKEN);
 } catch (err) {
