@@ -8,7 +8,8 @@ import readdir from 'readdirp';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { createLogger, logWithStack } from './utils/logger.js';
 import Event from './event.js';
-import { registerCommands } from './rest.js';
+import registerCommands from './rest.js';
+import keepAlive from './utils/keepAlive.js';
 
 if(process.env.NODE_ENV !== 'production') {
   const dotenv = await import('dotenv');
@@ -48,6 +49,7 @@ try {
     logger.debug(`Listening an event '${event.name}'.`);
   }
 
+  keepAlive(10); // 앱 안뒤지기 위함
   await registerCommands();
   await client.login(process.env.TOKEN);
 } catch (err) {

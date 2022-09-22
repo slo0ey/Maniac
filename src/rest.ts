@@ -5,7 +5,7 @@ import { LOGGER } from './constant.js';
 import { PingCommand } from './interactions/index.js';
 import { logWithStack } from './utils/logger.js';
 
-export async function registerCommands() {
+export default async () => {
   const rest = new REST({ version: '10' }).setToken(process.env.TOKEN!!);
   const logger = Container.get(LOGGER) as Logger;
 
@@ -59,4 +59,4 @@ export async function registerCommands() {
       logWithStack('An error has occurred while register slash commands', error),
     );
   }
-}
+};
