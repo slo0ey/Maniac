@@ -1,5 +1,6 @@
 import { Client, type ClientOptions } from 'discord.js';
 import { Container } from 'typedi';
+
 import { DISCORD_CLIENT } from '../constant.js';
 
 export function createDiscordClient(options: ClientOptions) {

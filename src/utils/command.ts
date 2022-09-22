@@ -1,4 +1,5 @@
 import { Container } from 'typedi';
+
 import { Arguments, Command } from '../command.js';
 import { COMMAND_MAP } from '../constant.js';
 

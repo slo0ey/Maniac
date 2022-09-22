@@ -1,4 +1,5 @@
 import { ApplicationCommandOptionType, CommandInteractionOption } from 'discord.js';
+
 import { Arguments, Command } from '../command.js';
 
 export function argumentOf<T extends Arguments>(

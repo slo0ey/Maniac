@@ -1,17 +1,20 @@
 import 'reflect-metadata';
-import { GatewayIntentBits } from 'discord.js';
-import { Arguments, Command } from './command.js';
-import { createDiscordClient } from './utils/client.js';
-import { createCommandMap } from './utils/command.js';
-import { Container } from 'typedi';
-import readdir from 'readdirp';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { createLogger, logWithStack } from './utils/logger.js';
+
+import { GatewayIntentBits } from 'discord.js';
+import readdir from 'readdirp';
+import { Container } from 'typedi';
+
+import { Arguments, Command } from './command.js';
 import Event from './event.js';
 import registerCommands from './rest.js';
+import { createDiscordClient } from './utils/client.js';
+import { createCommandMap } from './utils/command.js';
 import keepAlive from './utils/keepAlive.js';
+import { createLogger, logWithStack } from './utils/logger.js';
 
-if(process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV !== 'production') {
+  //프로덕션 레벨에선 Heroku Config Var 사용
   const dotenv = await import('dotenv');
   dotenv.config();
 }

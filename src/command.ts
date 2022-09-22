@@ -2,6 +2,8 @@ import type { AutocompleteInteraction, ChatInputCommandInteraction } from 'disco
 
 export type Arguments = { [k: string]: unknown };
 
+export type NoArguments = Record<string, unknown>;
+
 export type ChatInputContext = ChatInputCommandInteraction;
 
 export abstract class Command<T extends Arguments> {
