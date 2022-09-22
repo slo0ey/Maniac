@@ -10,7 +10,7 @@ export function logWithStack(message: string, error: Error) {
 }
 
 export function createLogger() {
-  const logDir = 'log';
+  const logDir = 'logs';
   const isDevelopment = process.env.NODE_ENV !== 'production';
 
   const { combine, timestamp, colorize, printf } = winston.format;
