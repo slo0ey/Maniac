@@ -1,13 +1,19 @@
 import 'reflect-metadata';
 import { GatewayIntentBits } from 'discord.js';
-import { Arguments, Command } from './command';
-import { createDiscordClient } from './utils/client';
-import { createCommandMap } from './utils/command';
-import Container from 'typedi';
+import { Arguments, Command } from './command.js';
+import { createDiscordClient } from './utils/client.js';
+import { createCommandMap } from './utils/command.js';
+import { Container } from 'typedi';
 import readdir from 'readdirp';
-import { createLogger, logWithStack } from './utils/logger';
-import { fileURLToPath, pathToFileURL, URL } from 'node:url';
-import Event from './event';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+import { createLogger, logWithStack } from './utils/logger.js';
+import Event from './event.js';
+import { registerCommands } from './rest.js';
+
+if(process.env.NODE_ENV !== 'production') {
+  const dotenv = await import('dotenv');
+  dotenv.config();
+}
 
 const client = createDiscordClient({
   intents: [GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildPresences],
@@ -20,10 +26,9 @@ try {
   const commandFiles = readdir(fileURLToPath(new URL('commands', import.meta.url)), {
     fileFilter: '*.js',
   });
-
   for await (const file of commandFiles) {
     const module = await import(pathToFileURL(file.fullPath).href);
-    const command = Container.get(module) as Command<Arguments>;
+    const command = Container.get(module.default) as Command<Arguments>;
 
     commandMap.set(command.name, command);
 
@@ -36,13 +41,14 @@ try {
 
   for await (const file of eventFiles) {
     const module = await import(pathToFileURL(file.fullPath).href);
-    const event = Container.get(module) as Event;
+    const event = Container.get(module.default) as Event;
 
     event.listen();
 
     logger.debug(`Listening an event '${event.name}'.`);
   }
 
+  await registerCommands();
   await client.login(process.env.TOKEN);
 } catch (err) {
   const error = err as Error;

@@ -1,13 +1,17 @@
-import { Command, ChatInputContext } from '../command';
+import { Service } from 'typedi';
+import { Command, ChatInputContext } from '../command.js';
 
-export default class PingCommand extends Command<{}> {
+@Service()
+class PingCommand extends Command<{}> {
   public constructor() {
     super('ping');
   }
 
   public override async chatInput(ctx: ChatInputContext, args: {}): Promise<void> {
-    super.chatInput(ctx, args)
+    super.chatInput(ctx, args);
     await ctx.deferReply({ ephemeral: true });
     await ctx.editReply('Pong! 🏓');
   }
 }
+
+export default PingCommand;

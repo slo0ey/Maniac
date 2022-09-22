@@ -7,13 +7,28 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "start:bot": "yarn workspace @maniac/bot yarn run start"
+    "build": "rm -rf dist && tsc",
+    "start": "yarn run build && node dist/index.js"
   },
-  "workspaces": [
-    "packages/bot",
-    "packages/website"
-  ],
+  "dependencies": {
+    "@discordjs/rest": "^1.1.0",
+    "axios": "^0.27.2",
+    "discord.js": "^14.3.0",
+    "dotenv": "^16.0.2",
+    "readdirp": "^3.6.0",
+    "reflect-metadata": "^0.1.13",
+    "typedi": "^0.10.0",
+    "winston": "^3.8.2",
+    "winston-daily-rotate-file": "^4.7.1"
+  },
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.38.0",
+    "@typescript-eslint/parser": "^5.38.0",
+    "eslint": "^8.23.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "prettier": "^2.7.1",
     "typescript": "^4.8.3"
   }
 }

@@ -6,7 +6,11 @@ module.exports = {
     sourceType: 'module',
   },
   plugins: ['@typescript-eslint'],
-  extends: ['eslint:recommended'],
+  extends: [
+    'eslint:recommended',
+    'plugin:@typescript-eslint/recommended',
+    'plugin:prettier/recommended',
+  ],
   rules: {
     '@typescript-eslint/interface-name-prefix': 'on',
     '@typescript-eslint/explicit-function-return-type': 'on',

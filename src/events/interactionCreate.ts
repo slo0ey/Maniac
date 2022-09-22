@@ -1,16 +1,17 @@
 import { Client, Events } from 'discord.js';
-import { Inject } from 'typedi';
-import { Logger } from 'winston';
-import { Arguments, Command } from '../command';
-import { COMMAND_MAP, DISCORD_CLIENT, LOGGER } from '../constant';
-import Event from '../event';
-import { argumentOf } from '../utils/argumentOf';
-import { logWithStack } from '../utils/logger';
+import { Inject, Service } from 'typedi';
+import winston from 'winston';
+import { Arguments, Command } from '../command.js';
+import { COMMAND_MAP, DISCORD_CLIENT, LOGGER } from '../constant.js';
+import Event from '../event.js';
+import { argumentOf } from '../utils/argumentOf.js';
+import { logWithStack } from '../utils/logger.js';
 
+@Service()
 export default class extends Event {
   public constructor(
     @Inject(DISCORD_CLIENT) public readonly client: Client<true>,
-    @Inject(LOGGER) public readonly logger: Logger,
+    @Inject(LOGGER) public readonly logger: winston.Logger,
     @Inject(COMMAND_MAP) public readonly commandMap: Map<string, Command<Arguments>>,
   ) {
     super(Events.InteractionCreate);

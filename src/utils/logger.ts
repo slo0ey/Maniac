@@ -1,7 +1,7 @@
-import Container from 'typedi';
+import { Container } from 'typedi';
 import winston from 'winston';
 import WinstonDaily from 'winston-daily-rotate-file';
-import { LOGGER } from '../constant';
+import { LOGGER } from '../constant.js';
 
 export function logWithStack(message: string, error: Error) {
   return `${message}
