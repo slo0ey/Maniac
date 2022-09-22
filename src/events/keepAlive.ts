@@ -1,15 +1,19 @@
 import cron from 'node-cron';
+import { Inject, Service } from 'typedi';
+import winston from 'winston';
 
-import Event from '../event';
+import { LOGGER } from '../constant.js';
+import Event from '../event.js';
 
+@Service()
 export default class extends Event {
-  public constructor() {
+  public constructor(@Inject(LOGGER) public readonly logger: winston.Logger) {
     super('keepAlive');
   }
 
   public listen(): void | Promise<void> {
     cron.schedule(`*/10 * * * *`, () => {
-      console.log("Don't sleep...");
+      this.logger.info("Don't sleep...");
     });
   }
 }
