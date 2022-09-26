@@ -35,6 +35,8 @@ export default class extends Event {
             command.chatInput(interaction, argumentOf(data, command));
           } catch (err) {
             const error = err as Error;
+            Error.prototype;
+            error.name;
             this.logger.error(
               logWithStack(
                 `An error has occurred while attempt to invoke slash command: ${commandName.toLowerCase()}`,

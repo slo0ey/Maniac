@@ -2,7 +2,9 @@ import { Firestore, CollectionReference, DocumentData } from 'firebase-admin/fir
 import LRUCache from 'lru-cache';
 import { Inject, Service } from 'typedi';
 
-import ManiacUser from '../api/user.js';
+import type ManiacUser from '../api/entity/user.js';
+import EntityNotFoundError from '../api/error/EntityNotFoundError.js';
+import FirestoreError from '../api/error/FirestoreError.js';
 import { FIRESTORE } from '../constant.js';
 import createCache from '../utils/cache.js';
 import CachedValue from '../utils/decorators/cachedValue.js';
@@ -20,30 +22,65 @@ export default class UserDatabase {
     this.usersRef = this.db.collection('users');
   }
 
-  @CachedValue(UserDatabase.userCache)
+  @CachedValue.Read(UserDatabase.userCache)
   async getUser(id: string) {
     const userRef = this.usersRef.doc(id);
-    const userDoc = await userRef.get();
 
-    if (!userDoc.exists) {
-      return null;
-    } else {
-      return userDoc.data() as ManiacUser;
+    try {
+      const userDoc = await userRef.get();
+
+      if (!userDoc.exists) {
+        throw new EntityNotFoundError(`User '${id}' not exist.`);
+      } else {
+        return userDoc.data() as ManiacUser;
+      }
+    } catch (e) {
+      throw new FirestoreError(
+        `An error has occurred while attempt to get user ${id}`,
+        e as Error,
+      );
     }
   }
 
+  @CachedValue.Insert(UserDatabase.userCache)
   async insertUser(user: ManiacUser) {
     const userRef = this.usersRef.doc(user.id);
-    await userRef.create(user);
+
+    try {
+      await userRef.create(user);
+    } catch (e) {
+      throw new FirestoreError(
+        `An error has occurred while attempt to insert user ${user.id}`,
+        e as Error,
+      );
+    }
   }
 
+  @CachedValue.Update(UserDatabase.userCache)
   async updateUser(user: Partial<ManiacUser>, isPartial = false) {
     const userRef = this.usersRef.doc(user.id!!);
-    await userRef.set(user, { merge: isPartial });
+
+    try {
+      await userRef.set(user, { merge: isPartial });
+    } catch (e) {
+      throw new FirestoreError(
+        `An error has occurred while attempt to update user ${user.id!!}`,
+        e as Error,
+      );
+    }
   }
 
+  @CachedValue.Delete(UserDatabase.userCache)
   async deleteUser(user: ManiacUser) {
     const userRef = this.usersRef.doc(user.id);
-    await userRef.delete();
+
+    try {
+      await userRef.delete();
+    } catch (e) {
+      throw new FirestoreError(
+        `An error has occurred while attempt to delete user ${user.id!!}`,
+        e as Error,
+      );
+    }
   }
 }
