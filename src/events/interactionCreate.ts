@@ -11,11 +11,11 @@ import { logWithStack } from '../utils/logger.js';
 @Service()
 export default class extends Event {
   public constructor(
-    @Inject(DISCORD_CLIENT) public readonly client: Client<true>,
-    @Inject(LOGGER) public readonly logger: winston.Logger,
-    @Inject(COMMAND_MAP) public readonly commandMap: Map<string, Command<Arguments>>,
+    @Inject(DISCORD_CLIENT) readonly client: Client<true>,
+    @Inject(LOGGER) readonly logger: winston.Logger,
+    @Inject(COMMAND_MAP) readonly commandMap: Map<string, Command<Arguments>>,
   ) {
-    super(Events.InteractionCreate);
+    super('interactionCreate');
   }
 
   public listen() {

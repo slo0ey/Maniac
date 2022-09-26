@@ -8,8 +8,9 @@ import { Container } from 'typedi';
 import { Arguments, Command } from './command.js';
 import Event from './event.js';
 import registerCommands from './rest.js';
-import { createDiscordClient } from './utils/client.js';
-import { createCommandMap } from './utils/command.js';
+import createDiscordClient from './utils/client.js';
+import createCommandMap from './utils/command.js';
+import createFireStore from './utils/firestore.js';
 import { createLogger, logWithStack } from './utils/logger.js';
 
 if (process.env.NODE_ENV !== 'production') {
@@ -18,10 +19,12 @@ if (process.env.NODE_ENV !== 'production') {
   dotenv.config();
 }
 
+// Discord Client 생성
 const client = createDiscordClient({
   intents: [GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildPresences],
 });
 
+// 기타 유틸 생성
 const logger = createLogger();
 const commandMap = createCommandMap();
 
@@ -51,8 +54,11 @@ try {
     logger.debug(`Listening an event '${event.name}'.`);
   }
 
+  // Firestore 초기화
+  await createFireStore();
+  // Slash Command 등록
   await registerCommands();
-  await client.login(process.env.TOKEN);
+  await client.login(process.env.TOKEN!!);
 } catch (err) {
   const error = err as Error;
   logger.error(logWithStack('An error has occurred while login to discord', error));

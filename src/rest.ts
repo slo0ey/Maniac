@@ -15,7 +15,7 @@ export default async () => {
   try {
     logger.info('Registering slash commands');
 
-    const DISCORD_CLIENT = process.env.DISCORD_CLIENT!;
+    const DISCORD_CLIENT = process.env.DISCORD_CLIENT!!;
     const groups = commands.reduce(
       (accumulator, { allowedGuilds, ...info }) => {
         if (allowedGuilds.length > 0) {
