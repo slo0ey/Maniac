@@ -1,5 +1,6 @@
-import Entity from '../entity';
+import Entity from '../entity.js';
 
-export default interface ManiacUser extends Entity {
+export default interface IManiacUser extends Entity {
+  //id
   alternativeName: string;
 }
