@@ -17,11 +17,7 @@ export function createLogger() {
   const { combine, timestamp, colorize, printf } = winston.format;
   const { Console } = winston.transports;
 
-  const logFormat = ({
-    timestamp,
-    level,
-    message,
-  }: winston.Logform.TransformableInfo) => {
+  const logFormat = ({ timestamp, level, message }: winston.Logform.TransformableInfo) => {
     return `[${timestamp}] | ${level.toUpperCase()}: ${message}`;
   };
 
