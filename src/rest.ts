@@ -3,19 +3,19 @@ import { Container } from 'typedi';
 import { Logger } from 'winston';
 
 import { LOGGER } from './constant.js';
-import { PingCommand } from './interactions/index.js';
+import { PingCommand, ProfileCommand, WordleCommand } from './interactions/index.js';
 import { logWithStack } from './utils/logger.js';
 
 export default async () => {
-  const rest = new REST({ version: '10' }).setToken(process.env.TOKEN!!);
+  const rest = new REST({ version: '10' }).setToken(process.env.TOKEN!);
   const logger = Container.get(LOGGER) as Logger;
 
-  const commands = [PingCommand];
+  const commands = [PingCommand, ProfileCommand, WordleCommand];
 
   try {
     logger.info('Registering slash commands');
 
-    const DISCORD_CLIENT = process.env.DISCORD_CLIENT!!;
+    const DISCORD_CLIENT = process.env.DISCORD_CLIENT!;
     const groups = commands.reduce(
       (accumulator, { allowedGuilds, ...info }) => {
         if (allowedGuilds.length > 0) {
@@ -30,7 +30,7 @@ export default async () => {
         }
         return accumulator;
       },
-      { _global: [] } as { [k: string]: RESTPostAPIApplicationCommandsJSONBody[] },
+      { _global: [] } as Record<string, RESTPostAPIApplicationCommandsJSONBody[]>,
     );
 
     logger.debug(`Grouped command: ${JSON.stringify(groups, null, 2)}`);
@@ -56,8 +56,6 @@ export default async () => {
     logger.info('Register commands successfully!');
   } catch (err) {
     const error = err as Error;
-    logger.error(
-      logWithStack('An error has occurred while register slash commands', error),
-    );
+    logger.error(logWithStack('An error has occurred while register slash commands', error));
   }
 };
