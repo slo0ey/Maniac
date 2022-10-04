@@ -6,6 +6,7 @@ import { Inject, Service } from 'typedi';
 import winston from 'winston';
 
 import { DISCORD_CLIENT, LOGGER } from '../constant.js';
+import Event from '../event.js';
 
 @Service()
 export default class extends Event {
@@ -16,9 +17,9 @@ export default class extends Event {
     super('ready');
   }
 
-  public listen() {
+  public override listen() {
     this.client.on(Events.ClientReady, async () => {
-      const tz = process.env.TZ!!;
+      const tz = process.env.TZ!;
 
       this.logger.info('Bot is ready to run');
       this.logger.info(`Set default timezone to ${tz}..`);

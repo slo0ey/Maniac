@@ -1,10 +1,10 @@
-import { ApplicationCommandOptionType, CommandInteractionOption } from 'discord.js';
+import { ApplicationCommandOptionType, CacheType, CommandInteractionOption } from 'discord.js';
 
-import { Arguments, Command } from '../command.js';
+import { Arguments } from '../command.js';
+import { MemberOrUserOrEmpty } from '../types/common.types.js';
 
 export function argumentOf<T extends Arguments>(
-  args: readonly CommandInteractionOption[],
-  command?: Command<T>,
+  args: readonly CommandInteractionOption<CacheType>[],
 ): T {
   return args.reduce((accumulator, option) => {
     switch (option.type) {
@@ -14,7 +14,10 @@ export function argumentOf<T extends Arguments>(
       case ApplicationCommandOptionType.Integer:
         return { ...accumulator, [option.name]: option.value };
       case ApplicationCommandOptionType.User:
-        return { ...accumulator, [option.name]: option.member ?? option.user };
+        return {
+          ...accumulator,
+          [option.name]: (option.member ?? option.user) as MemberOrUserOrEmpty,
+        };
       case ApplicationCommandOptionType.Channel:
         return { ...accumulator, [option.name]: option.channel };
       case ApplicationCommandOptionType.Role:

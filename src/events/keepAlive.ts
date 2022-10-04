@@ -11,7 +11,7 @@ export default class extends Event {
     super('keepAlive');
   }
 
-  public listen(): void | Promise<void> {
+  public override listen(): void | Promise<void> {
     cron.schedule(`*/10 * * * *`, () => {
       this.logger.info("Don't sleep...");
     });
