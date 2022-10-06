@@ -1,18 +1,15 @@
 import { MessageCollector } from 'discord.js';
 import { Container } from 'typedi';
-import winston from 'winston';
 
-import { LOGGER, WORDLE_SESSION } from '../constant.js';
+import { WORDLE_SESSION } from '../constant.js';
 import { CONTAIN, createWord, createWordle, NOT_CONTAIN, SAME } from '../image/wordle.js';
 import { MessageTemplate } from '../interactions/wordle.js';
 import { WordleSession } from '../types/wordle.types.js';
 
 const sessionContainer = Container.get(WORDLE_SESSION) as WordleSession;
-const logger = Container.get(LOGGER) as winston.Logger;
 
 const answerCollector = (collector: MessageCollector) => {
   collector.on('collect', async (message) => {
-    logger.info('Collected!');
     const sessionKey = JSON.stringify({ channelId: message.channelId, userId: message.author.id });
     const session = sessionContainer.get(message.guildId!, sessionKey);
 
@@ -20,7 +17,7 @@ const answerCollector = (collector: MessageCollector) => {
       collector.stop();
       return;
     }
-    await message.delete();
+    await message.delete(); //쓴 단어 삭제
 
     const { messageId, answer, userName } = session;
     const input = [];

@@ -6,6 +6,7 @@ import {
   ChatInputCommandInteraction,
   Client,
   GuildMember,
+  Message,
   TextChannel,
 } from 'discord.js';
 import { Inject, Service } from 'typedi';
@@ -84,12 +85,14 @@ export default class WordleCommand extends Command<WordleCommandArgument> {
         };
         this.sessionContainer.set(guild.id, sessionKey, session);
 
-        // 메시지 컬렉터 생성
         const isEnglish = /^[A-Za-z]*$/;
+        const filter = (m: Message) => isEnglish.test(m.content) && m.author.id == member.id;
+        // 메시지 컬렉터 생성
         answerCollector(
           channel.createMessageCollector({
-            filter: (m) => isEnglish.test(m.content),
+            filter,
             max: 6,
+            time: 60000 * 10,
           }),
         );
       }

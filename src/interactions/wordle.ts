@@ -24,8 +24,7 @@ const WordleCommand = Object.assign(
 
 const MessageTemplate = {
   onGame(playerName: string, life: number) {
-    return `:regional_indicator_w: :regional_indicator_o: :regional_indicator_r: :regional_indicator_d: :regional_indicator_l: :regional_indicator_e: 
-    > 
+    return `:regional_indicator_w: :regional_indicator_o: :regional_indicator_r: :regional_indicator_d: :regional_indicator_l: :regional_indicator_e:
     > :bust_in_silhouette: 플레이어: ${playerName}
     > :hearts: 남은 기회: ${':heart:'.repeat(life) + ':black_heart:'.repeat(6 - life)}`;
   },
