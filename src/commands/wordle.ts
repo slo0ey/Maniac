@@ -110,10 +110,9 @@ export default class WordleCommand extends Command<WordleCommandArgument> {
   public override async buttonClick(
     ctx: ButtonInteraction<CacheType>,
     customId: string,
-    userId: string,
   ): Promise<void> {
     if (customId.startsWith('reset')) {
-      const sessionkey = JSON.stringify({ channelId: ctx.channel!.id, userId });
+      const sessionkey = JSON.stringify({ channelId: ctx.channel!.id, userId: ctx.user.id });
       this.sessionContainer.delete(ctx.guildId!, sessionkey);
 
       const embed = EmbedTemplate.clear(this.client.user.displayAvatarURL());
