@@ -5,7 +5,11 @@ import { DISCORD_CLIENT } from '../constant.js';
 
 export default () => {
   const client = new Client({
-    intents: [GatewayIntentBits.Guilds],
+    intents: [
+      GatewayIntentBits.Guilds,
+      GatewayIntentBits.GuildMessages,
+      GatewayIntentBits.MessageContent,
+    ],
   });
   Container.set(DISCORD_CLIENT, client);
 

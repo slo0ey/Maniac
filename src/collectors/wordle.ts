@@ -1,14 +1,36 @@
 import { MessageCollector } from 'discord.js';
 import { Container } from 'typedi';
 
+import ManiacUser from '../api/impl/user.js';
 import { WORDLE_SESSION } from '../constant.js';
+import UserDatabase from '../db/user.js';
 import { CONTAIN, createWord, createWordle, NOT_CONTAIN, SAME } from '../image/wordle.js';
-import { MessageTemplate } from '../interactions/wordle.js';
-import { WordleSession } from '../types/wordle.types.js';
+import { EmbedTemplate, MessageTemplate } from '../interactions/wordle.js';
+import { WordleSession, WordType } from '../types/wordle.types.js';
 
-const sessionContainer = Container.get(WORDLE_SESSION) as WordleSession;
+const calcScore = (type: WordType, life: number, streak: number) => {
+  let score = life * 10;
+  switch (type) {
+    case '4':
+      score *= 0.75;
+      break;
+    case '6':
+      score *= 1.25;
+      break;
+    case '7':
+      score *= 1.5;
+      break;
+    case '8':
+      score *= 1.75;
+      break;
+  }
+  return score + streak * 2;
+};
 
 const answerCollector = (collector: MessageCollector) => {
+  const sessionContainer = Container.get(WORDLE_SESSION) as WordleSession;
+  const userDB = Container.get(UserDatabase);
+
   collector.on('collect', async (message) => {
     const sessionKey = JSON.stringify({ channelId: message.channelId, userId: message.author.id });
     const session = sessionContainer.get(message.guildId!, sessionKey);
@@ -20,27 +42,19 @@ const answerCollector = (collector: MessageCollector) => {
     await message.delete(); //쓴 단어 삭제
 
     const { messageId, answer, userName } = session;
-    const input = [];
     const mMessage =
       message.channel.messages.cache.get(messageId) ??
       (await message.channel.messages.fetch(messageId));
 
     if (message.content === answer) {
-      const mCanvas = createWord(Array.from(answer).map((char) => ({ char, type: SAME })));
-      const mImage = await mCanvas.encode('png');
-      await mMessage.edit({
-        content: ':tada 축하합니다! 정답입니다! :tada:',
-        files: [mImage],
-      });
-      await mMessage.delete();
-
-      collector.stop();
+      collector.stop('success');
       return;
     }
 
     // wordle 이미지 생성
+    const input = [];
     for (let i = 0; i < answer.length; i++) {
-      const char = message.content[i];
+      const char = message.content.charAt(i);
       if (char === answer[i]) {
         input.push({ char, type: SAME });
       } else if (answer.indexOf(char) != -1) {
@@ -49,17 +63,62 @@ const answerCollector = (collector: MessageCollector) => {
         input.push({ char, type: NOT_CONTAIN });
       }
     }
-    const mCanvas = createWordle(session.inputs);
-    const mImage = await mCanvas.encode('png');
-
-    // 세션 업데이트
     session.inputs.push(input);
     session.life--;
+
+    const mCanvas = createWordle(session.inputs);
+    const mImage = await mCanvas.encode('png');
 
     await mMessage.edit({
       content: MessageTemplate.onGame(userName, session.life),
       files: [mImage],
     });
+  });
+
+  collector.once('end', async (collected, reason) => {
+    console.log(reason);
+    if (reason == 'success') {
+      // 세션 가져오기
+      const message = collected.at(0)!;
+      const sessionKey = JSON.stringify({
+        channelId: message.channelId,
+        userId: message.author.id,
+      });
+      const { answer, messageId, userName, type, life } = sessionContainer.get(
+        message.guildId!,
+        sessionKey,
+      )!;
+
+      // 통계 가져오기 & 업데이트
+      const user = await userDB.get(message.author.id);
+      const statistics = user!.statistics.wordle;
+      const newStatistics = statistics.updated(type, true);
+
+      const score = newStatistics.calcScore(type, life);
+      const newUser = ManiacUser.create({
+        statistics: { wordle: newStatistics },
+        ...user!.updatedExp(score * 0.1),
+      });
+
+      await userDB.update(newUser);
+
+      // 정답 이미지 생성
+      const mCanvas = createWord(Array.from(answer).map((char) => ({ char, type: SAME })));
+      const mImage = await mCanvas.encode('png');
+
+      const mMessage =
+        message.channel.messages.cache.get(messageId) ??
+        (await message.channel.messages.fetch(messageId));
+      await mMessage.edit({
+        content: '',
+        embeds: [EmbedTemplate.onSuccess(userName, type, score, statistics)],
+        files: [mImage],
+      });
+
+      sessionContainer.delete(message.guildId!, sessionKey);
+    } else if(reason == 'limit') {
+      //6회 초과시
+    }
   });
 };
 

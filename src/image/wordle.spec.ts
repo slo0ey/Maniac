@@ -12,7 +12,7 @@ import { createChar, createWord, createWordle, SAME, CONTAIN, NOT_CONTAIN } from
 chai.use(chaiAsPromised);
 
 describe('Wordle 이미지 테스트', function () {
-  const mockData = createMocks(6, (i) =>
+  const mockData = createMocks(3, (i) =>
     createMocks(5, (i) => ({ char: rs(1).toUpperCase(), type: re(SAME, CONTAIN, NOT_CONTAIN) })),
   );
 

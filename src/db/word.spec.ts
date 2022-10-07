@@ -34,12 +34,12 @@ describe('WordDB 테스트', function () {
   });
 
   it('길이 5인 단어 아무거나 하나 가져오기', async function () {
-    const word = await wordDB.getRandomWordsByLength('5');
+    const word = await wordDB.getRandomWordByLength('5');
     console.log(`Random Word: ${word}`);
   });
 
   it('b로 시작하는 단어 아무거나 하나 가져오기', async function () {
-    const word = await wordDB.getRandomWordsByStartChar('b');
+    const word = await wordDB.getRandomWordByStartChar('b');
     console.log(`Random Word: ${word}`);
   });
 });

@@ -9,6 +9,7 @@ export const SAME = '#57ac57';
 const createChar = ({ char, type }: Char) => {
   const canvas = createCanvas(48, 48);
   const ctx = canvas.getContext('2d');
+  char = char.toUpperCase();
 
   ctx.font = '24px sans-serif';
 
