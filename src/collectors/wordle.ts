@@ -106,10 +106,13 @@ const answerCollector = (collector: MessageCollector) => {
       const mCanvas = createWord(Array.from(answer).map((char) => ({ char, type: SAME })));
       const mImage = await mCanvas.encode('png');
 
+      // 기존 메시지 삭제
       const mMessage =
         message.channel.messages.cache.get(messageId) ??
         (await message.channel.messages.fetch(messageId));
-      await mMessage.edit({
+      await mMessage.delete();
+
+      await message.channel.send({
         content: '',
         embeds: [EmbedTemplate.onSuccess(userName, type, score, statistics)],
         files: [mImage],
@@ -117,7 +120,7 @@ const answerCollector = (collector: MessageCollector) => {
 
       sessionContainer.delete(message.guildId!, sessionKey);
     } else if(reason == 'limit') {
-      //6회 초과시
+      //TODO: 6회 초과시 코드 작성
     }
   });
 };
